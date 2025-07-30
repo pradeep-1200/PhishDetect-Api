@@ -19,24 +19,31 @@ def home():
 def predict_url():
     data = request.json
     try:
-        if 'url' not in data:
+        if 'url' not in data or not data['url'].strip():
             return jsonify({'error': 'Missing URL'}), 400
 
-        url = data['url']
+        url = data['url'].strip()
         features = extract_features(url)
 
         prediction = model.predict([features])[0]
         probability = model.predict_proba([features])[0]
 
+        confidence_value = round(float(max(probability)) * 100, 2)
+
+        # Force "Uncertain" if model not confident enough
+        if confidence_value < 70:
+            prediction = -1
+
         result = {
             'prediction': int(prediction),
-            'confidence': round(float(max(probability)) * 100, 2)
+            'confidence': confidence_value
         }
 
         return jsonify(result)
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))  # Render provides this PORT
