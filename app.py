@@ -1,6 +1,6 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import joblib
+from flask import Flask, request, jsonify # type: ignore
+from flask_cors import CORS # pyright: ignore[reportMissingModuleSource]
+import joblib # pyright: ignore[reportMissingImports]
 import os
 from utils import extract_features
 
